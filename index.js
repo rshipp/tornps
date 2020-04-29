@@ -225,7 +225,6 @@ function predict(user, args, mentions) {
 
   const getPatternPeak = (poss, id) => {
     const filtered = poss.filter(x=>x.pattern_number===id);
-    console.log(filtered);
     if (filtered.length == 1) {
       return ' (potential peak **' +
         filtered[0].prices.flatMap((x, i) => x.max === filtered[0].weekMax ? i : []).map(x => indexToDayTime[x]) +
