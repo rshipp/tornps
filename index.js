@@ -227,7 +227,7 @@ function predict(user, args, mentions) {
     const filtered = poss.filter(x=>x.pattern_number===id);
     if (filtered.length == 1) {
       return ' (potential peak **' +
-        filtered[0].prices.flatMap((x, i) => x.max === filtered[0].weekMax ? i : []).map(x => indexToDayTime[x]) +
+        filtered[0].prices.flatMap((x, i) => x.max === filtered[0].weekMax ? i : []).map(x => indexToDayTime[x]).join(', ') +
         '** at **' + filtered[0].weekMax + '**🔔)';
     } else {
       return '';
