@@ -228,7 +228,7 @@ function predict(user, args, mentions) {
     if (filtered.length == 1) {
       return ' (potential peak **' +
         filtered[0].prices.flatMap((x, i) => x.max === filtered[0].weekMax ? i : []).map(x => indexToDayTime[x]).join(', ') +
-        '** at **' + filtered[0].weekMax + '**🔔)';
+        '** up to **' + filtered[0].weekMax + '**🔔)';
     } else {
       return '';
     }
