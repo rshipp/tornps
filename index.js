@@ -206,16 +206,43 @@ function predict(user, args, mentions) {
     }
   };
 
+  const indexToDayTime = [
+    false,
+    false,
+    'Monday morning',
+    'Monday night',
+    'Tuesday morning',
+    'Tuesday night',
+    'Wednesday morning',
+    'Wednesday night',
+    'Thursday morning',
+    'Thursday night',
+    'Friday morning',
+    'Friday night',
+    'Saturday morning',
+    'Saturday night',
+  ];
+
+  const getPatternPeak = (poss, id) => {
+    const filtered = poss.filter(x=>x.pattern_number===id);
+    console.log(filtered);
+    if (filtered.length == 1) {
+      return ' (peak ' + filtered[0].prices.flatMap((x, i) => x.max === filtered[0].weekMax ? i : []).map(x=>indexToDayTime[x]) + ')';
+    } else {
+      return '';
+    }
+  };
+
   const patternWeights = [
-    ['Fluctuating', getPatternPercent(generatedPossibilities, 0)],
-    ['Large Spike', getPatternPercent(generatedPossibilities, 1)],
-    ['Decreasing', getPatternPercent(generatedPossibilities, 2)],
-    ['Small Spike', getPatternPercent(generatedPossibilities, 3)],
+    ['Fluctuating', getPatternPercent(generatedPossibilities, 0), getPatternPeak(generatedPossibilities, 0)],
+    ['Large Spike', getPatternPercent(generatedPossibilities, 1), getPatternPeak(generatedPossibilities, 1)],
+    ['Decreasing', getPatternPercent(generatedPossibilities, 2), ''],
+    ['Small Spike', getPatternPercent(generatedPossibilities, 3), getPatternPeak(generatedPossibilities, 3)],
   ]
 
-  const reply = patternWeights.sort((x,y)=>parseInt(y[1])-parseInt(x[1])).map(x=>x.join(': ')).join('\n') +
+  const reply = patternWeights.sort((x,y)=>parseInt(y[1])-parseInt(x[1])).map(x=>x.slice(0, 2).join(': ')+x[2]).join('\n') +
     '\nGuaranteed min: ' + Math.min(...generatedPossibilities.map(x=>x.weekGuaranteedMinimum)) +
-    '\nPorential max: ' + Math.max(...generatedPossibilities.map(x=>x.weekMax)) +
+    '\nPotential max: ' + Math.max(...generatedPossibilities.map(x=>x.weekMax)) +
     '\nTurnip Prophet: ' + turnipProphetLink(prices, pattern);
 
   return {
