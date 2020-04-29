@@ -283,10 +283,17 @@ function link(user, args, mentions) {
   };
 }
 
+function help() {
+  return {
+    send: Object.keys(commands).map(x=>'!'+x).join(', ')
+  };
+}
+
 /**
  * Command Map
  */
 commands = {
+  'help': help,
   'sell': sellPrice,
   'buy': buyPrice,
   'lastpattern': lastPattern,
@@ -304,6 +311,10 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+  // Ignore bot messages.
+  if (msg.author.bot) return;
+
+  // Process !commands.
   if (msg.content.startsWith('!')) {
     const command = commands[msg.content.slice(1).split(' ')[0]];
     if (command) {
