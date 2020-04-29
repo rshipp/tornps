@@ -22,7 +22,7 @@ db.prepare(`CREATE TABLE IF NOT EXISTS sell_price (
   price INTEGER NOT NULL,
   PRIMARY KEY(user_id, week) ON CONFLICT REPLACE
 );`).run();
- 
+
 db.prepare(`CREATE TABLE IF NOT EXISTS buy_price (
   user_id INTEGER NOT NULL,
   week INTEGER NOT NULL,
@@ -128,7 +128,7 @@ function buyPrice(user, args) {
       week--;
     }
   }
-  
+
   // Store the price in the DB.
   const stmt = db.prepare('INSERT INTO buy_price VALUES (?, ?, ?, ?, ?)');
   stmt.run(user, week, day, night, price)
@@ -188,7 +188,7 @@ function predict(user, args, mentions) {
   const pattern = patternRow ? patternRow.pattern : undefined;
   const sellPrice = sellPriceRow ? sellPriceRow.price : undefined;
   var buyPriceList = Array(6 * 2);
-  buyPriceRows.forEach(row => { 
+  buyPriceRows.forEach(row => {
     buyPriceList[row.day * 2 - 2 + row.night] = row.price;
   });
   const prices = [sellPrice, sellPrice, ...buyPriceList]
@@ -251,6 +251,38 @@ function predict(user, args, mentions) {
   };
 }
 
+function link(user, args, mentions) {
+  var user_id = user;
+  if (mentions && mentions.first()) {
+    user_id = mentions.first().id;
+  }
+
+  // Get data from the DB.
+  const week = moment().week();
+  const patternRow = db.prepare('SELECT pattern FROM pattern WHERE user_id = ? AND week = ?').get(user_id, week - 1);
+  const sellPriceRow = db.prepare('SELECT price FROM sell_price WHERE user_id = ? AND week = ?').get(user_id, week);
+  const buyPriceRows = db.prepare('SELECT day, night, price FROM buy_price WHERE user_id = ? AND week = ?').all(user_id, week);
+
+  if (!sellPriceRow && !buyPriceRows.length) {
+    return {
+      'send': 'no data yet this week. try !sell, !buy, !lastpattern'
+    };
+  }
+
+  // Unpack db row objeccts and convert to epected formats.
+  const pattern = patternRow ? patternRow.pattern : undefined;
+  const sellPrice = sellPriceRow ? sellPriceRow.price : undefined;
+  var buyPriceList = Array(6 * 2);
+  buyPriceRows.forEach(row => {
+    buyPriceList[row.day * 2 - 2 + row.night] = row.price;
+  });
+  const prices = [sellPrice, sellPrice, ...buyPriceList]
+
+  return {
+    send: turnipProphetLink(prices, pattern)
+  };
+}
+
 /**
  * Command Map
  */
@@ -259,6 +291,8 @@ commands = {
   'buy': buyPrice,
   'lastpattern': lastPattern,
   'predict': predict,
+  'link': link,
+  'code': ()=>({send:'https://github.com/rshipp/tornps'}),
 }
 
 /**
