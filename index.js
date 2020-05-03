@@ -127,6 +127,13 @@ function buyPrice(user, args) {
       // Note: breaks on year rollover, but who cares.
       week--;
     }
+    day = dayOfWeek;
+  }
+  // Can't buy on Sundays.
+  if (day == 0) {
+    return {
+     'reply': `there is no buy price on Sundays, did you mean \`!sell\`?`
+    };
   }
 
   // Store the price in the DB.
