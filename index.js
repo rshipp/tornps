@@ -208,8 +208,6 @@ function predict(user, args, mentions) {
     const filtered = poss.filter(x=>x.pattern_number===id);
     if (filtered.length) {
       return (filtered[0].category_total_probability*100).toPrecision(3) + '%';
-    } else {
-      return '0%';
     }
   };
 
@@ -246,7 +244,7 @@ function predict(user, args, mentions) {
     ['Large Spike', getPatternPercent(generatedPossibilities, 1), getPatternPeak(generatedPossibilities, 1)],
     ['Decreasing', getPatternPercent(generatedPossibilities, 2), ''],
     ['Small Spike', getPatternPercent(generatedPossibilities, 3), getPatternPeak(generatedPossibilities, 3)],
-  ]
+  ].filter(t=>t[1]);
 
   const reply = patternWeights.sort((x,y)=>parseInt(y[1])-parseInt(x[1])).map(x=>x.slice(0, 2).join(': ')+x[2]).join('\n') +
     '\nGuaranteed min: ' + Math.min(...generatedPossibilities.map(x=>x.weekGuaranteedMinimum)) +
