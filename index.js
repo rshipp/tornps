@@ -310,9 +310,18 @@ commands = {
 /**
  * Bot Main
  */
-client.on('ready', () => {
+function setPresence() {
   client.user.setPresence({ activity: { name: 'the stalk market' }, status: 'invisible' })
+}
+
+client.on('ready', () => {
+  setPresence();
   console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on('resumed', () => {
+  setPresence();
+  console.log(`Connection resumed.`);
 });
 
 client.on('message', msg => {
