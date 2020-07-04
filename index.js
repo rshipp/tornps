@@ -73,9 +73,13 @@ function respond(msg, results) {
 function sellPrice(user, args) {
   // Validate price.
   const price = parseInt(args[0]);
-  if (!price || price < 90 || price > 110) {
+  if (!price) {
     return {
-      'reply': 'no'
+      'reply': 'what was Daisy Mae\'s sell price?'
+    };
+  } else if (price < 90 || price > 110) {
+    return {
+      'reply': `invalid sell price, did you mean \`!buy ${price}\`?`
     };
   }
 
@@ -94,7 +98,7 @@ function buyPrice(user, args) {
   const price = parseInt(args[0]);
   if (!price || price < 1 || price > 660) {
     return {
-      'reply': 'no'
+      'reply': 'must give a valid buy price'
     };
   }
 
@@ -319,9 +323,13 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('resumed', () => {
+// Handle shard events cleanly, so the bot doesn't reconnect as "online" constantly.
+client.on('shardResume', () => {
   setPresence();
-  console.log(`Connection resumed.`);
+});
+
+client.on('shardReady', () => {
+  setPresence();
 });
 
 client.on('message', msg => {
