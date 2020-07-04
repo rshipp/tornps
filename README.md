@@ -2,6 +2,6 @@
 
 !["stonks" but with Timmy (or Tommy?) Nook and the word "tornps"](tornps.png "tornps")
 
-[Invite me](https://discordapp.com/api/oauth2/authorize?client_id=704002376696070214&permissions=247872&scope=bot)
+It's a Discord bot that helps you play the stalk market.
 
 Based on https://github.com/mikebryant/ac-nh-turnip-prices.
